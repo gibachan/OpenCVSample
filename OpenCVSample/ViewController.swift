@@ -124,7 +124,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     // 毎フレーム実行される処理
     func captureOutput(captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, fromConnection connection: AVCaptureConnection!)
     {
-        dispatch_async(dispatch_get_main_queue(), {
+        dispatch_sync(dispatch_get_main_queue(), {
             // UIImageへ変換
             let image = CameraUtil.imageFromSampleBuffer(sampleBuffer)
             
