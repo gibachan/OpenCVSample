@@ -52,8 +52,9 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         
         // バックカメラをmyDeviceに格納.
         for device in devices {
-            if(device.position == AVCaptureDevicePosition.Back){
-                myDevice = device as AVCaptureDevice
+            if(device.position == AVCaptureDevicePosition.Front){
+//                if(device.position == AVCaptureDevicePosition.Back){
+                myDevice = device as! AVCaptureDevice
             }
         }
         if myDevice == nil {
@@ -61,8 +62,12 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         }
         
         // バックカメラからVideoInputを取得.
-        let myInput = AVCaptureDeviceInput.deviceInputWithDevice(myDevice, error: nil) as AVCaptureDeviceInput
-        
+        var myInput: AVCaptureDeviceInput! = nil
+        do {
+            myInput = try AVCaptureDeviceInput(device: myDevice) as AVCaptureDeviceInput
+        } catch let error {
+            print(error)
+        }
         
         // セッションに追加.
         if mySession.canAddInput(myInput) {
@@ -73,18 +78,19 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         
         // 出力先を設定
         myOutput = AVCaptureVideoDataOutput()
-        myOutput.videoSettings = [ kCVPixelBufferPixelFormatTypeKey: kCVPixelFormatType_32BGRA ]
+        myOutput.videoSettings = [ kCVPixelBufferPixelFormatTypeKey: Int(kCVPixelFormatType_32BGRA) ]
+        
+        
         
         // FPSを設定
-        var lockError: NSError?
-        if myDevice.lockForConfiguration(&lockError) {
-            if let error = lockError {
-                println("lock error: \(error.localizedDescription)")
-                return false
-            } else {
-                myDevice.activeVideoMinFrameDuration = CMTimeMake(1, 15)
-                myDevice.unlockForConfiguration()
-            }
+        do {
+            try myDevice.lockForConfiguration()
+
+            myDevice.activeVideoMinFrameDuration = CMTimeMake(1, 15)
+            myDevice.unlockForConfiguration()
+        } catch let error {
+            print("lock error: \(error)")
+            return false
         }
         
         // デリゲートを設定
