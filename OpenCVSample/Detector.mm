@@ -69,7 +69,7 @@
         int radius;
         center.x = cv::saturate_cast<int>((r->x + r->width*0.5));
         center.y = cv::saturate_cast<int>((r->y + r->height*0.5));
-        radius = cv::saturate_cast<int>((r->width + r->height));
+        radius = cv::saturate_cast<int>((r->width + r->height) / 2);
         cv::circle(mat, center, radius, cv::Scalar(80,80,255), 3, 8, 0 );
     }
     
