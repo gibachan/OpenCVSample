@@ -1,2 +1,6 @@
-platform :ios, "8.0"
-pod 'OpenCV', '2.4.9'
+platform :ios, '8.0'
+
+target 'OpenCVSample' do
+  use_frameworks!
+  pod 'OpenCV', '~> 3.2.0'
+end
