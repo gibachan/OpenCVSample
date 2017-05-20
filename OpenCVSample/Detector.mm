@@ -6,10 +6,10 @@
 //  Copyright (c) 2014年 gibachan. All rights reserved.
 //
 
+#import <opencv2/opencv.hpp>
+#import <opencv2/imgcodecs/ios.h>
 
 #import "OpenCVSample-Bridging-Header.h"
-#import <opencv2/opencv.hpp>
-#import <opencv2/highgui/ios.h>
 
 @interface Detector()
 {

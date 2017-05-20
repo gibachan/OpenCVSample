@@ -51,8 +51,8 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         let devices = AVCaptureDevice.devices()
         
         // バックカメラをmyDeviceに格納.
-        for device in devices {
-            if(device.position == AVCaptureDevicePosition.Front){
+        for device in devices! {
+            if((device as AnyObject).position == AVCaptureDevicePosition.front){
 //                if(device.position == AVCaptureDevicePosition.Back){
                 myDevice = device as! AVCaptureDevice
             }
@@ -78,7 +78,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         
         // 出力先を設定
         myOutput = AVCaptureVideoDataOutput()
-        myOutput.videoSettings = [ kCVPixelBufferPixelFormatTypeKey: Int(kCVPixelFormatType_32BGRA) ]
+        myOutput.videoSettings = [ kCVPixelBufferPixelFormatTypeKey as AnyHashable: Int(kCVPixelFormatType_32BGRA) ]
         
         
         
@@ -94,7 +94,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         }
         
         // デリゲートを設定
-        let queue: dispatch_queue_t = dispatch_queue_create("myqueue",  nil)
+        let queue: DispatchQueue = DispatchQueue(label: "myqueue",  attributes: [])
         myOutput.setSampleBufferDelegate(self, queue: queue)
 
         
@@ -111,8 +111,8 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         // カメラの向きを合わせる
         for connection in myOutput.connections {
             if let conn = connection as? AVCaptureConnection {
-                if conn.supportsVideoOrientation {
-                    conn.videoOrientation = AVCaptureVideoOrientation.Portrait
+                if conn.isVideoOrientationSupported {
+                    conn.videoOrientation = AVCaptureVideoOrientation.portrait
                 }
             }
         }
@@ -122,14 +122,14 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
 
 
     // 毎フレーム実行される処理
-    func captureOutput(captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, fromConnection connection: AVCaptureConnection!)
+    func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!)
     {
-        dispatch_sync(dispatch_get_main_queue(), {
+        DispatchQueue.main.sync(execute: {
             // UIImageへ変換
             let image = CameraUtil.imageFromSampleBuffer(sampleBuffer)
             
             // 顔認識
-            let faceImage = self.detector.recognizeFace(image)
+            let faceImage = self.detector?.recognizeFace(image)
             
             // 表示
             self.imageView.image = faceImage
